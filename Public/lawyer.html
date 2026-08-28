@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>واجهة المحامي - نظام إدارة المحامين</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .lawyer-dashboard {
+            display: none;
+        }
+        .login-form {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .register-form {
+            max-width: 500px;
+            margin: 50px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: #f0f0f0;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .tab-button.active {
+            background: #1a237e;
+            color: white;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .case-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .case-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .file-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .file-upload-area:hover {
+            border-color: #1a237e;
+            background: #f8f9fa;
+        }
+        .client-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .client-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .client-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #1a237e;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- صفحة تسجيل الدخول -->
+    <div id="loginPage" class="container">
+        <div class="login-form">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #1a237e;">⚖️ تسجيل دخول المحامي</h2>
+            
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="showLoginTab()">تسجيل الدخول</button>
+                <button class="tab-button" onclick="showRegisterTab()">تسجيل جديد</button>
+            </div>
+
+            <!-- نموذج تسجيل الدخول -->
+            <div id="loginForm">
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="أدخل بريدك الإلكتروني">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="أدخل كلمة المرور">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="loginLawyer()">تسجيل الدخول</button>
+                <div id="loginMessage" style="margin-top: 15px; text-align: center;"></div>
+            </div>
+
+            <!-- نموذج التسجيل -->
+            <div id="registerForm" class="hidden">
+                <div class="form-group">
+                    <label>الاسم الكامل</label>
+                    <input type="text" id="regFullName" class="form-control" placeholder="أدخل اسمك الكامل">
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="regEmail" class="form-control" placeholder="أدخل بريدك الإلكتروني">
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="tel" id="regPhone" class="form-control" placeholder="أدخل رقم الهاتف">
+                </div>
+                <div class="form-group">
+                    <label>رقم الترخيص المهني</label>
+                    <input type="text" id="regLicense" class="form-control" placeholder="أدخل رقم الترخيص">
+                </div>
+                <div class="form-group">
+                    <label>التخصص</label>
+                    <select id="regSpecialization" class="form-control">
+                        <option value="">اختر التخصص</option>
+                        <option value="مدني">قانون مدني</option>
+                        <option value="جزائي">قانون جزائي</option>
+                        <option value="تجاري">قانون تجاري</option>
+                        <option value="أحوال شخصية">أحوال شخصية</option>
+                        <option value="عمالي">قانون عمالي</option>
+                        <option value="عقاري">قانون عقاري</option>
+                        <option value="ضريبي">قانون ضريبي</option>
+                        <option value="دولي">قانون دولي</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="regPassword" class="form-control" placeholder="أدخل كلمة المرور">
+                </div>
+                <div class="form-group">
+                    <label>تأكيد كلمة المرور</label>
+                    <input type="password" id="regConfirmPassword" class="form-control" placeholder="أعد إدخال كلمة المرور">
+                </div>
+                <button class="btn btn-success" style="width: 100%;" onclick="registerLawyer()">تسجيل</button>
+                <div id="registerMessage" style="margin-top: 15px; text-align: center;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- لوحة تحكم المحامي -->
+    <div id="lawyerDashboard" class="lawyer-dashboard">
+        <div class="container">
+            <!-- الشريط الجانبي -->
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h3>⚖️ لوحة المحامي</h3>
+                    <p id="lawyerName" style="color: #ffd700;"></p>
+                </div>
+                <div class="sidebar-menu">
+                    <a href="#dashboard" class="menu-item active" onclick="showSection('dashboard')">
+                        <span>📊</span> لوحة التحكم
+                    </a>
+                    <a href="#cases" class="menu-item" onclick="showSection('cases')">
+                        <span>📁</span> القضايا
+                    </a>
+                    <a href="#clients" class="menu-item" onclick="showSection('clients')">
+                        <span>👥</span> العملاء
+                    </a>
+                    <a href="#calendar" class="menu-item" onclick="showSection('calendar')">
+                        <span>📅</span> الأجندة
+                    </a>
+                    <a href="#messages" class="menu-item" onclick="showSection('messages')">
+                        <span>💬</span> الرسائل
+                    </a>
+                    <a href="#files" class="menu-item" onclick="showSection('files')">
+                        <span>📎</span> الملفات
+                    </a>
+                    <a href="#camera" class="menu-item" onclick="showSection('camera')">
+                        <span>📷</span> الكاميرا
+                    </a>
+                    <a href="#settings" class="menu-item" onclick="showSection('settings')">
+                        <span>⚙️</span> الإعدادات
+                    </a>
+                    <a href="#" class="menu-item" onclick="logout()">
+                        <span>🚪</span> تسجيل الخروج
+                    </a>
+                </div>
+            </div>
+
+            <!-- المحتوى الرئيسي -->
+            <div class="main-content">
+                <!-- الرأس -->
+                <div class="header">
+                    <div class="header-left">
+                        <button class="btn btn-sm" onclick="toggleSidebar()">☰</button>
+                        <h2 id="sectionTitle">لوحة التحكم</h2>
+                    </div>
+                    <div class="header-right">
+                        <span id="onlineStatus" class="online-indicator offline"></span>
+                        <div class="user-avatar" id="userAvatar"></div>
+                    </div>
+                </div>
+
+                <!-- قسم لوحة التحكم -->
+                <div id="dashboardSection" class="section">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalCases">0</div>
+                            <div class="stat-label">إجمالي القضايا</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="activeCases">0</div>
+                            <div class="stat-label">قضايا نشطة</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalClients">0</div>
+                            <div class="stat-label">العملاء</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="todayEvents">0</div>
+                            <div class="stat-label">مواعيد اليوم</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">آخر القضايا</h3>
+                        </div>
+                        <div id="recentCases"></div>
+                    </div>
+                </div>
+
+                <!-- قسم القضايا -->
+                <div id="casesSection" class="section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">إدارة القضايا</h3>
+                            <button class="btn btn-primary" onclick="showNewCaseModal()">+ قضية جديدة</button>
+                        </div>
+                        <div id="casesList"></div>
+                    </div>
+                </div>
+
+                <!-- قسم العملاء -->
+                <div id="clientsSection" class="section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">العملاء</h3>
+                            <button class="btn btn-primary" onclick="showAddClientModal()">+ إضافة عميل</button>
+                        </div>
+                        <div class="client-list" id="clientsList"></div>
+                    </div>
+                </div>
+
+                <!-- قسم الأجندة -->
+                <div id="calendarSection" class="section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">الأجندة والمواعيد</h3>
+                            <button class="btn btn-primary" onclick="showNewEventModal()">+ موعد جديد</button>
+                        </div>
+                        <div id="eventsList"></div>
+                    </div>
+                </div>
+
+                <!-- قسم الرسائل -->
+                <div id="messagesSection" class="section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">الدردشة</h3>
+                        </div>
+                        <div class="chat-container">
+                            <div class="chat-messages" id="chatMessages"></div>
+                            <div class="chat-input">
+                                <input type="text" id="messageInput" placeholder="اكتب رسالتك..." onkeypress="handleMessageKeyPress(event)">
+                                <button class="btn btn-primary" onclick="sendMessage()">إرسال</button>
+                                <button class="btn btn-success" onclick="openCamera()">📷</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- قسم الملفات -->
+                <div id="filesSection" class="section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">الملفات والمستندات</h3>
+                        </div>
+                        <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                            <h3>📁 انقر لرفع ملف</h3>
+                            <p>أو اسحب وأفلت الملف هنا</p>
+                            <input type="file" id="fileInput" style="display: none;" multiple onchange="uploadFiles()">
+                        </div>
+                        <div id="filesList" style="margin-top: 20px;"></div>
+                    </div>
+                </div>
+
+                <!-- قسم الكاميرا -->
+                <div id="cameraSection" class="section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">تصوير المستندات</h3>
+                        </div>
+                        <div style="text-align: center;">
+                            <video id="cameraPreview" autoplay playsinline></video>
+                            <br>
+                            <button class="btn btn-primary" onclick="capturePhoto()">📸 التقاط صورة</button>
+                            <button class="btn btn-danger" onclick="stopCamera()">إيقاف الكاميرا</button>
+                        </div>
+                        <canvas id="photoCanvas" style="display: none;"></canvas>
+                        <div id="capturedPhotos"></div>
+                    </div>
+                </div>
+
+                <!-- قسم الإعدادات -->
+                <div id="settingsSection" class="section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">الإعدادات الشخصية</h3>
+                        </div>
+                        <div id="settingsForm">
+                            <div class="form-group">
+                                <label>الاسم الكامل</label>
+                                <input type="text" id="settingsName" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>البريد الإلكتروني</label>
+                                <input type="email" id="settingsEmail" class="form-control" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>رقم الهاتف</label>
+                                <input type="tel" id="settingsPhone" class="form-control">
+                            </div>
+                            <button class="btn btn-primary" onclick="updateSettings()">حفظ التغييرات</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال القضية الجديدة -->
+    <div id="newCaseModal" class="modal">
+        <div class="modal-content">
+            <h3>قضية جديدة</h3>
+            <div class="form-group">
+                <label>عنوان القضية</label>
+                <input type="text" id="caseTitle" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>رقم القضية</label>
+                <input type="text" id="caseNumber" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>نوع القضية</label>
+                <select id="caseType" class="form-control">
+                    <option value="مدني">مدني</option>
+                    <option value="جزائي">جزائي</option>
+                    <option value="تجاري">تجاري</option>
+                    <option value="أحوال شخصية">أحوال شخصية</option>
+                    <option value="عمالي">عمالي</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>المحكمة</label>
+                <input type="text" id="courtName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>العميل</label>
+                <select id="caseClient" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label>وصف القضية</label>
+                <textarea id="caseDescription" class="form-control" rows="4"></textarea>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: end;">
+                <button class="btn btn-success" onclick="createCase()">إنشاء</button>
+                <button class="btn btn-danger" onclick="closeModal('newCaseModal')">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال إضافة عميل -->
+    <div id="addClientModal" class="modal">
+        <div class="modal-content">
+            <h3>إضافة عميل</h3>
+            <div class="form-group">
+                <label>البريد الإلكتروني للعميل</label>
+                <input type="email" id="clientEmail" class="form-control" placeholder="client@example.com">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: end;">
+                <button class="btn btn-success" onclick="addClient()">إضافة</button>
+                <button class="btn btn-danger" onclick="closeModal('addClientModal')">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال موعد جديد -->
+    <div id="newEventModal" class="modal">
+        <div class="modal-content">
+            <h3>موعد جديد</h3>
+            <div class="form-group">
+                <label>عنوان الموعد</label>
+                <input type="text" id="eventTitle" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>نوع الموعد</label>
+                <select id="eventType" class="form-control">
+                    <option value="جلسة">جلسة</option>
+                    <option value="اجتماع">اجتماع</option>
+                    <option value="موعد">موعد</option>
+                    <option value="مهمة">مهمة</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>التاريخ والوقت</label>
+                <input type="datetime-local" id="eventDate" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>المكان</label>
+                <input type="text" id="eventLocation" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>ملاحظات</label>
+                <textarea id="eventNotes" class="form-control" rows="3"></textarea>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: end;">
+                <button class="btn btn-success" onclick="createEvent()">إضافة</button>
+                <button class="btn btn-danger" onclick="closeModal('newEventModal')">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال الكاميرا -->
+    <div id="cameraModal" class="camera-modal">
+        <div class="camera-container">
+            <h3>تصوير مستند</h3>
+            <video id="modalCameraPreview" autoplay playsinline></video>
+            <br>
+            <button class="btn btn-primary" onclick="captureFromModal()">📸 التقاط</button>
+            <button class="btn btn-danger" onclick="closeCameraModal()">إغلاق</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/lawyer.js"></script>
+</body>
+</html>
