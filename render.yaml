@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: lawyer-system
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.20.4
+      - key: PORT
+        value: 3000
